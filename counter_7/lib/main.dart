@@ -51,8 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   String _ganjilgenap = 'GENAP';
   MaterialColor _color = Colors.red;
-  bool _visible = false;
-
+  
   void _incrementCounter() {
     setState(() {
       // This call to setState tells the Flutter framework that something has
