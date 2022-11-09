@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Program Counter'),
     );
   }
 }
@@ -49,6 +49,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  String _ganjilgenap = 'GENAP';
+  MaterialColor _color = Colors.red;
+  bool _visible = false;
 
   void _incrementCounter() {
     setState(() {
@@ -58,6 +61,35 @@ class _MyHomePageState extends State<MyHomePage> {
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
       _counter++;
+
+      if (_counter % 2 == 0) {
+        _ganjilgenap = "GENAP";
+        _color = Colors.red;
+      } else {
+        _ganjilgenap = "GANJIL";
+        _color = Colors.blue;
+      }
+
+      if (_counter > 0) {
+        _visible = true;
+      }
+    });
+  }
+
+  void _decrementCounter() {
+    setState(() {
+      if (_counter != 0) {
+        _counter--;
+        if (_counter % 2 == 0) {
+          _ganjilgenap = "GENAP";
+          _color = Colors.red;
+        } else {
+          _ganjilgenap = "GANJIL";
+          _color = Colors.blue;
+        }
+      } else {
+        _visible = false;
+      }
     });
   }
 
@@ -95,8 +127,11 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+            Text(
+                '$_ganjilgenap',
+                style: TextStyle(
+                  color: _color,
+                )
             ),
             Text(
               '$_counter',
@@ -105,10 +140,26 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(left: 25),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Visibility(
+              visible: _visible,
+              child: FloatingActionButton(
+                onPressed: _decrementCounter,
+                tooltip: 'Decrement',
+                child: const Icon(Icons.remove),
+              ),
+            ),
+            FloatingActionButton(
+              onPressed: _incrementCounter,
+              tooltip: 'Increment',
+              child: const Icon(Icons.add),
+            ),
+          ],
+        ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
