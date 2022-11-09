@@ -61,7 +61,6 @@ class _MyHomePageState extends State<MyHomePage> {
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
       _counter++;
-
       if (_counter % 2 == 0) {
         _ganjilgenap = "GENAP";
         _color = Colors.red;
@@ -69,26 +68,18 @@ class _MyHomePageState extends State<MyHomePage> {
         _ganjilgenap = "GANJIL";
         _color = Colors.blue;
       }
-
-      if (_counter > 0) {
-        _visible = true;
-      }
     });
   }
 
   void _decrementCounter() {
     setState(() {
-      if (_counter != 0) {
-        _counter--;
-        if (_counter % 2 == 0) {
-          _ganjilgenap = "GENAP";
-          _color = Colors.red;
-        } else {
-          _ganjilgenap = "GANJIL";
-          _color = Colors.blue;
-        }
+      _counter--;
+      if (_counter % 2 == 0) {
+        _ganjilgenap = "GENAP";
+        _color = Colors.red;
       } else {
-        _visible = false;
+        _ganjilgenap = "GANJIL";
+        _color = Colors.blue;
       }
     });
   }
@@ -141,12 +132,12 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: Padding(
-        padding: EdgeInsets.only(left: 25),
+        padding: EdgeInsets.only(left: 30),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Visibility(
-              visible: _visible,
+              visible: _counter != 0,
               child: FloatingActionButton(
                 onPressed: _decrementCounter,
                 tooltip: 'Decrement',
