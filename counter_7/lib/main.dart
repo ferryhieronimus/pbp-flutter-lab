@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:counter_7/drawer.dart';
 
 void main() {
   runApp(const MyApp());
@@ -51,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   String _ganjilgenap = 'GENAP';
   MaterialColor _color = Colors.red;
-  
+
   void _incrementCounter() {
     setState(() {
       // This call to setState tells the Flutter framework that something has
@@ -130,6 +131,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
+      drawer: const DrawerApp(),
       floatingActionButton: Padding(
         padding: EdgeInsets.only(left: 30),
         child: Row(
