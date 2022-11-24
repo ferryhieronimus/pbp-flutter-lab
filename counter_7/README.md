@@ -429,3 +429,284 @@ Halaman dalam aplikasi flutter ibarat "stack". Halaman yang ditampilkan sekarang
     }
     }
     ```
+</details>
+
+<details>
+    <summary>Tugas 9: Integrasi Web Service pada Flutter
+</summary>
+<br>
+
+# Tugas 9: Integrasi Web Service pada Flutter
+
+## Apakah bisa kita melakukan pengambilan data JSON tanpa membuat model terlebih dahulu? Jika iya, apakah hal tersebut lebih baik daripada membuat model sebelum melakukan pengambilan data JSON?
+
+Serializing JSON bisa dilakukan dengan dua cara, yaitu secara inline dan dengan membuat class model. Berikut adalah contoh meng-serialize JSON dengan inline:
+```
+Map<String, dynamic> user = jsonDecode(jsonString);
+
+print('Howdy, ${user['name']}!');
+print('We sent the verification link to ${user['email']}.');
+```
+`jsonDecode()` mengembalikan Map<String, dynamic>. Dengan demikian, kita tidak mengetahui valuenya sampai runtime. Kita kehilangan fitur type-safety. Padahal type-safety merupakan fitur dari sebuah statically-typed language, seperti Dart. Kode kita akan menjadi lebih mudah error
+
+[Sumber](https://docs.flutter.dev/cookbook/networking/fetch-data)
+
+## Sebutkan widget apa saja yang kamu pakai di proyek kali ini dan jelaskan fungsinya.
+
+- Column Widget : sebuah widget untuk menampilkan *children*-nya secara horizontal
+- Row Widget : sebuah widget untuk menampilkan *children*-nya secara vertikal
+- Text : sebuah widget untuk menampilkan teks
+- Padding : sebuah widget untuk padding
+- Container: widget "wrapper" yang bisa menambahkan padding, margin, dan posisi
+- FutureBuilder: widget yang membangun dirinya sendiri berdasarkan interaksi terkini dari Future
+- ListView: widget yang dapat di-scroll
+- GestureDetector: widget untuk mendeteksi gestur
+
+## Jelaskan mekanisme pengambilan data dari json hingga dapat ditampilkan pada Flutter.
+
+Pertama, kita tambahkan terlebih dahulu `package` http. `Package` ini berfungsi agar kita bisa fetch data ke internet. Setelah itu, kita membuat request kepada network. Fungsi dibawah ini meng-fetch data menggunakan method http.get().
+```
+Future<http.Response> namaMethod() {
+  return http.get(Uri.parse('https://tugaspbpferry.herokuapp.com/mywatchlist/json/'));
+}
+```
+Method diatas mengembalikan `Future` yang mengandung `response`. Setelah itu, kita buat class dari Objek yang diinginkan dari data JSON. Kemudian, kita convert `http.Response` menjadi objek.  Kita bisa meng-fetch data dengan memanggil fungsi fetch yang kita buat dan menyimpannya ke dalam suatu variabel. Hasil dari function tersebut berupa `Future`. Terakhir, kita tampilkan data dengan menggunakan `FutureBuilder`.
+
+[Sumber](https://docs.flutter.dev/cookbook/networking/fetch-data)
+
+##  Jelaskan bagaimana cara kamu mengimplementasikan tugas kali ini.
+
+1. Buat folder (package) widget, page, model, dan function
+2. Pindahkan drawer.dart ke widget, lalu `data_budget.dart` dan `tambah_budget.dart` ke page, dan `budget.dart` ke model
+3. Buat file baru bernama `mywatchlist_page.dart`. File ini berfungsi untuk menampilkan list dari mywatchlist
+4. Tambahkan kode berikut ke `mywatchlist_page.dart`:
+    ```
+    class _MyWatchListPage extends State<MyWatchListPage> {
+    @override
+    Widget build(BuildContext context) {
+        // TODO: implement build
+        return Scaffold(
+            appBar: AppBar(
+            title: const Text('My Watch List'),
+            ),
+            drawer: const DrawerApp(),
+            body: FutureBuilder(
+                future: fetchToDo(),
+                builder: (context, AsyncSnapshot snapshot) {
+                if (snapshot.data == null) {
+                    return const Center(child: CircularProgressIndicator());
+                } else {
+                    if (!snapshot.hasData) {
+                    return Column(
+                        children: const [
+                        Text(
+                            "Tidak ada watch list :(",
+                            style: TextStyle(
+                                fontSize: 20),
+                        ),
+                        SizedBox(height: 8),
+                        ],
+                    );
+                    } else {
+                    return ListView.builder(
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (_, index)=> Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            padding: const EdgeInsets.all(20.0),
+                            decoration: BoxDecoration(
+                                color:Colors.white,
+                                border: Border.all(
+                                    color: snapshot.data![index].fields.watched ? Colors.green : Colors.red,
+                                    width: 3
+                                ),
+                                borderRadius: BorderRadius.circular(15.0),
+                                boxShadow: const [
+                                BoxShadow(
+                                    color: Colors.black,
+                                    blurRadius: 2.0
+                                )
+                                ]
+                            ),
+                            child: GestureDetector(
+                            onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => WatchListDetailPage(
+                                        title:
+                                        snapshot.data![index].fields.title,
+                                        watched:
+                                        snapshot.data![index].fields.watched,
+                                        rating:
+                                        snapshot.data![index].fields.rating,
+                                        releasedDate: snapshot.data![index].fields.releaseDate.toString(),
+                                        review:
+                                        snapshot.data![index].fields.review,
+                                    ))),
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                Container(
+                                    child: Text(
+                                    "${snapshot.data![index].fields.title}",
+                                    style: const TextStyle(
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.bold,
+                                    ),
+                                    ),
+                                ),
+                                const SizedBox(height: 10),
+                                ],
+                            ),
+                            ),
+                        )
+                    );
+                    }
+                }
+                }
+            )
+        );
+    }
+    }
+    ```
+5. Buat file baru bernama `mywatchlist_detail.dart`. File ini berfungsi untuk menampilkan detail dari movies
+6. Tambahkan kode berikut ke `mywatchlist_detail.dart`
+    ```
+   class WatchListDetailPage extends StatelessWidget {
+    final String title;
+    final bool watched;
+    final double rating;
+    final String releasedDate;
+    final String review;
+
+    const WatchListDetailPage(
+        {Key? key,
+            required this.title,
+            required this.watched,
+            required this.rating,
+            required this.releasedDate,
+            required this.review})
+        : super(key: key);
+
+    @override
+    Widget build(BuildContext context) {
+        return Scaffold(
+            appBar: AppBar(
+            title: const Text(
+                'My Watch List',
+                style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 22,
+                color: Colors.black,
+                ),
+            ),
+            ),
+            drawer: const DrawerApp(),
+            body: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 32, color: Colors.black),
+                ),
+                const SizedBox(
+                    height: 32.0,
+                ),
+                Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                    children: [
+                        Text(
+                        "Status: ",
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold
+                        ),
+                        ),
+                        Text(
+                        watched ? "watched" : "not watched",
+                        style: const TextStyle(
+                            fontWeight: FontWeight.normal,
+                            fontSize: 15,
+                            color: Colors.black),
+                        ),
+                    ],
+                    ),
+                ),
+                Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                    children: [
+                        Text(
+                            "Released Date: ",
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold
+                        ),
+                        ),
+                        Text(
+                        releasedDate,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.normal,
+                            fontSize: 15,
+                            color: Colors.black),
+                        ),
+                    ],
+                    ),
+                ),
+                Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                    children: [
+                        Text(
+                        "Rating: " ,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold
+                        ),
+                        ),
+                        Text(
+                        rating.toString() + "/5",
+                        style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 15),
+                        ),
+                    ],
+                    ),
+                ),
+                Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                    "Review: " + review,
+                    style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 15),
+                    ),
+                ),
+                const Spacer(),
+                Align(
+                    alignment: Alignment.bottomCenter,
+                    child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        minimumSize: const Size.fromHeight(50),
+                    ),
+                    onPressed: () {
+                        Navigator.pop(
+                        context,
+                        MaterialPageRoute(builder: (context) => const MyWatchListPage()),
+                        );
+                    },
+                    child: const Text(
+                        "Back",
+                        style: TextStyle(color: Colors.white),
+                    ),
+                    ),
+                )
+                ],
+            ),
+            )
+        );
+    }
+    }
+    ```
+7. Masuk ke folder model. Buat file baru bernama `mywatchlist.dart`
+8. Copy isi https://tugaspbpferry.herokuapp.com/mywatchlist/json/ dan masukkan ke https://app.quicktype.io/. Masukkan kodenya ke `mywatchlist.dart`.
+</details>

@@ -13,14 +13,13 @@ class MyWatchListPage extends StatefulWidget {
 class _MyWatchListPage extends State<MyWatchListPage> {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
         appBar: AppBar(
           title: const Text('My Watch List'),
         ),
         drawer: const DrawerApp(),
         body: FutureBuilder(
-            future: fetchToDo(),
+            future: fetchMyWatchList(),
             builder: (context, AsyncSnapshot snapshot) {
               if (snapshot.data == null) {
                 return const Center(child: CircularProgressIndicator());
@@ -67,10 +66,7 @@ class _MyWatchListPage extends State<MyWatchListPage> {
                                     snapshot.data![index].fields.watched,
                                     rating:
                                     snapshot.data![index].fields.rating,
-                                    releasedDate: snapshot.data![index]
-                                        .fields
-                                        .releaseDate
-                                        .toString(),
+                                    releasedDate: snapshot.data![index].fields.releaseDate.toString(),
                                     review:
                                     snapshot.data![index].fields.review,
                                   ))),
